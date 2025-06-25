@@ -10,6 +10,15 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="my_app">My App</string>
+    <string name="food_delivery_app">Food Delivery App</string>
     <string name="hello_explore_your_food">Hello Explore Your Food.</string>
+    <string name="register">Register</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register_page">Register Page</string>
+    <string name="full_name">Full name</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="all_ready_registered">All ready registered ?</string>
+    <string name="sign_in_page">Sign In Page</string>
+    <string name="dont_have_an_account">Dont have an account ?</string>
 </resources>
