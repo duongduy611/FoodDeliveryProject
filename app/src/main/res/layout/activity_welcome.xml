@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/lobster"
-        android:text="@string/my_app"
+        android:text="@string/food_delivery_app"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="33sp"
@@ -50,7 +50,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="14dp"
-        android:text="Register"
+        android:text="@string/register"
+        android:onClick="register"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +64,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign in"
+        android:text="@string/sign_in"
+        android:onClick="login"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -72,6 +74,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button2"
+        app:layout_constraintVertical_bias=".3"
         />
 
 
