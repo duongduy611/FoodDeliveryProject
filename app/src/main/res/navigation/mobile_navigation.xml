@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_daily_meal"
         android:name="com.example.foodappprm.ui.gallery.DailyMealFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_daily_meal"
         tools:layout="@layout/fragment_daily_meal" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_favorite"
         android:name="com.example.foodappprm.ui.slideshow.FavoriteFragment"
-        android:label="@string/menu_slideshow"
+        android:label="@string/menu_daily_meal"
         tools:layout="@layout/fragment_favorite" />
 </navigation>
