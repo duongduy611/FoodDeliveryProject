@@ -3,7 +3,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_logout">Logout</string>
@@ -22,4 +21,10 @@
     <string name="all_ready_registered">All ready registered ?</string>
     <string name="sign_in_page">Sign In Page</string>
     <string name="dont_have_an_account">Dont have an account ?</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_cart">My Cart</string>
+    <string name="duongduy203_st_gmail_com">duongduy203.st@gmail.com</string>
+    <string name="duong_duy">Duong Duy</string>
+    <string name="search_your_food">Search your food</string>
 </resources>
