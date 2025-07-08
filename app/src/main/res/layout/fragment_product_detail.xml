@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/productImageView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/productNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/productPriceTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#4CAF50"
+                android:textSize="20sp" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:isIndicator="true"
+                android:numStars="5" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Description"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/descriptionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Ingredients"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ingredientsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/decreaseButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/baseline_remove_24" />
+
+                <TextView
+                    android:id="@+id/quantityTextView"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textSize="18sp" />
+
+                <ImageButton
+                    android:id="@+id/increaseButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/baseline_add_24" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/addToCartButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Add to Cart" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

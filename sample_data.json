@@ -1,0 +1,124 @@
+// Dữ liệu mẫu cho Categories:
+
+[
+  {
+    "category_id": "cat_1",
+    "name": "Hamburgers",
+    "iconName": "hamburger"
+  },
+  {
+    "category_id": "cat_2",
+    "name": "Pizza",
+    "iconName": "pizza"
+  },
+  {
+    "category_id": "cat_3",
+    "name": "Sandwiches",
+    "iconName": "sandwich"
+  },
+  {
+    "category_id": "cat_4",
+    "name": "Ice Cream",
+    "iconName": "ice_cream"
+  },
+  {
+    "category_id": "cat_5",
+    "name": "French Fries",
+    "iconName": "fried_potatoes"
+  }
+]
+
+// Dữ liệu mẫu cho Products:
+
+[
+  {
+    "product_id": "burger1",
+    "name": "Classic Hamburger",
+    "price": 55000,
+    "image": "burger2",
+    "category_id": "cat_1",
+    "rating": 4.5,
+    "isAvailable": true,
+    "description_short": "Juicy beef patty with fresh vegetables",
+    "description_long": "Our classic hamburger features a 100% pure beef patty, fresh lettuce, tomatoes, onions, pickles, and our special sauce, all served on a toasted sesame seed bun.",
+    "ingredients": ["Beef patty", "Lettuce", "Tomato", "Onion", "Pickles", "Special sauce", "Sesame bun"],
+    "nutrition": {
+      "calories": "550 kcal",
+      "protein": "25g",
+      "carbs": "45g",
+      "fat": "30g"
+    }
+  },
+  {
+    "product_id": "pizza1",
+    "name": "Margherita Pizza",
+    "price": 120000,
+    "image": "pizza1",
+    "category_id": "cat_2",
+    "rating": 4.8,
+    "isAvailable": true,
+    "description_short": "Classic Italian pizza with fresh basil",
+    "description_long": "Traditional Neapolitan pizza topped with San Marzano tomatoes, fresh mozzarella cheese, fresh basil, salt, and extra-virgin olive oil.",
+    "ingredients": ["Pizza dough", "Tomato sauce", "Fresh mozzarella", "Fresh basil", "Olive oil"],
+    "nutrition": {
+      "calories": "800 kcal",
+      "protein": "30g",
+      "carbs": "90g",
+      "fat": "35g"
+    }
+  },
+  {
+    "product_id": "sandwich1",
+    "name": "Club Sandwich",
+    "price": 45000,
+    "image": "sandwich1",
+    "category_id": "cat_3",
+    "rating": 4.3,
+    "isAvailable": true,
+    "description_short": "Triple-decker sandwich with chicken and bacon",
+    "description_long": "A delicious triple-decker sandwich filled with grilled chicken, crispy bacon, fresh lettuce, tomato, and mayonnaise, served on toasted bread.",
+    "ingredients": ["Chicken breast", "Bacon", "Lettuce", "Tomato", "Mayonnaise", "Toasted bread"],
+    "nutrition": {
+      "calories": "450 kcal",
+      "protein": "28g",
+      "carbs": "35g",
+      "fat": "22g"
+    }
+  },
+  {
+    "product_id": "icecream1",
+    "name": "Vanilla Supreme",
+    "price": 35000,
+    "image": "icecream1",
+    "category_id": "cat_4",
+    "rating": 4.6,
+    "isAvailable": true,
+    "description_short": "Premium vanilla ice cream with toppings",
+    "description_long": "Rich and creamy vanilla ice cream made with Madagascar vanilla beans, topped with chocolate sauce and chopped nuts.",
+    "ingredients": ["Fresh cream", "Vanilla extract", "Sugar", "Chocolate sauce", "Chopped nuts"],
+    "nutrition": {
+      "calories": "280 kcal",
+      "protein": "5g",
+      "carbs": "32g",
+      "fat": "15g"
+    }
+  },
+  {
+    "product_id": "fries1",
+    "name": "Classic French Fries",
+    "price": 25000,
+    "image": "fries1",
+    "category_id": "cat_5",
+    "rating": 4.4,
+    "isAvailable": true,
+    "description_short": "Crispy golden french fries",
+    "description_long": "Perfectly crispy on the outside, fluffy on the inside french fries, seasoned with sea salt and served hot.",
+    "ingredients": ["Potatoes", "Vegetable oil", "Sea salt"],
+    "nutrition": {
+      "calories": "320 kcal",
+      "protein": "4g",
+      "carbs": "42g",
+      "fat": "16g"
+    }
+  }
+]

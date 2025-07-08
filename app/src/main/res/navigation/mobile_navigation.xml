@@ -27,4 +27,24 @@
         android:name="com.example.foodappprm.ui.mycart.MyCartFragment"
         android:label="@string/my_cart"
         tools:layout="@layout/fragment_my_cart" />
+
+    <fragment
+        android:id="@+id/nav_product_list"
+        android:name="com.example.foodappprm.ui.productlist.ProductListFragment"
+        android:label="Products"
+        tools:layout="@layout/fragment_product_list">
+        <action
+            android:id="@+id/action_nav_product_list_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.example.foodappprm.ui.productdetail.ProductDetailFragment"
+        android:label="Product Detail"
+        tools:layout="@layout/fragment_product_detail">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
 </navigation>

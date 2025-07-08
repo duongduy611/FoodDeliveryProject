@@ -27,4 +27,12 @@
     <string name="duongduy203_st_gmail_com">duongduy203.st@gmail.com</string>
     <string name="duong_duy">Duong Duy</string>
     <string name="search_your_food">Search your food</string>
+    <string name="menu_product_list">Product List</string>
+    <string name="price_format">$%.2f</string>
+    <string name="rating_format">Rating: %.1f</string>
+    <string name="all_categories">All Categories</string>
+    <string name="error_loading_categories">Error loading categories: %1$s</string>
+    <string name="error_loading_products">Error loading products: %1$s</string>
+    <string name="in_stock">In Stock</string>
+    <string name="out_of_stock">Out of Stock</string>
 </resources>
