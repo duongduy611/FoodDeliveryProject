@@ -51,28 +51,31 @@ public class RegistrationActivity extends AppCompatActivity {
                 String name = fullname.getText().toString().trim();
                 String email = registerEmail.getText().toString().trim();
                 String password = registerPassword.getText().toString().trim();
+
                 if (name.isEmpty()) {
-                    registerButton.setError("Full name cannot be empty");
+                    fullname.setError("Full name cannot be empty");
+                    return;
                 }
                 if (email.isEmpty()) {
-                    registerButton.setError("Email cannot be empty");
+                    registerEmail.setError("Email cannot be empty");
+                    return;
                 }
                 if (password.isEmpty()) {
                     registerPassword.setError("Password cannot be empty");
-                } else {
-                    mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                    return;
+                }
 
-                                    // Cập nhật displayName (full name)
-                                    if (user != null) {
-                                        UserProfileChangeRequest profileUpdates =
-                                                new UserProfileChangeRequest.Builder()
-                                                    .setDisplayName(name)
-                                                    .build();
+                mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+
+                                if (user != null) {
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(name)
+                                            .build();
 
                                     user.updateProfile(profileUpdates)
                                             .addOnCompleteListener(profileTask -> {
@@ -81,28 +84,28 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                        String uid = user.getUid();
-                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-                                        User newUser = new User(name, email);
-                                        ref.child(uid).setValue(newUser)
-                                                .addOnCompleteListener(databaseTask -> {
-                                                    if (databaseTask.isSuccessful()) {
-                                                        Log.d("REGISTER", "User data saved to database");
-                                                    } else {
-                                                        Log.e("REGISTER", "Failed to save user data", databaseTask.getException());
-                                                    }
-                                                });
+                                    String uid = user.getUid();
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+                                    User newUser = new User(name, email);
+                                    ref.child(uid).setValue(newUser)
+                                            .addOnCompleteListener(databaseTask -> {
+                                                if (databaseTask.isSuccessful()) {
+                                                    Log.d("REGISTER", "User data saved to database");
+                                                    Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                                                    finish();
+                                                } else {
+                                                    Log.e("REGISTER", "Failed to save user data", databaseTask.getException());
+                                                    Toast.makeText(RegistrationActivity.this, "Failed to save user data", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
                                 }
-
-                                Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                             } else {
                                 Toast.makeText(RegistrationActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                 Log.e("REGISTER", "Error", task.getException());
                             }
                         }
                     });
-                }
             }
         });
 
@@ -110,7 +113,6 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                finish();
             }
         });
     }
