@@ -36,6 +36,7 @@ public class DailyMealFragment extends Fragment {
         dailyMealModels.add(new DailyMeal(R.drawable.lunch, "Lunch", "30% off", "Lunch", "Delicious pizza with fresh"));
         dailyMealModels.add(new DailyMeal(R.drawable.dinner, "Dinner", "25% off", "Dinner", "Delicious pizza with"));
         dailyMealModels.add(new DailyMeal(R.drawable.sweets, "Sweets", "49% off", "Sweets", "Delicious pizza"));
+        dailyMealModels.add(new DailyMeal(R.drawable.coffe, "Coffee", "20% off", "Drinks", "Delicious pizza with fresh ingredients"));
 
         dailyMealAdapter = new DailyMealAdapter(getContext(),dailyMealModels);
         recyclerView.setAdapter(dailyMealAdapter);
