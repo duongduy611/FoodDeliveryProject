@@ -12,14 +12,39 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.foodappprm.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_daily_meal"
+        android:name="com.example.foodappprm.ui.gallery.DailyMealFragment"
+        android:label="@string/menu_daily_meal"
+        tools:layout="@layout/fragment_daily_meal" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.foodappprm.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_favorite"
+        android:name="com.example.foodappprm.ui.slideshow.FavoriteFragment"
+        android:label="@string/menu_daily_meal"
+        tools:layout="@layout/fragment_favorite" />
+    <fragment
+        android:id="@+id/nav_my_cart"
+        android:name="com.example.foodappprm.ui.mycart.MyCartFragment"
+        android:label="@string/my_cart"
+        tools:layout="@layout/fragment_my_cart" />
+
+    <fragment
+        android:id="@+id/nav_product_list"
+        android:name="com.example.foodappprm.ui.productlist.ProductListFragment"
+        android:label="Products"
+        tools:layout="@layout/fragment_product_list">
+        <action
+            android:id="@+id/action_nav_product_list_to_nav_product_detail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.example.foodappprm.ui.productdetail.ProductDetailFragment"
+        android:label="Product Detail"
+        tools:layout="@layout/fragment_product_detail">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1061025041675",
+    "project_id": "food-app-prm",
+    "storage_bucket": "food-app-prm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061025041675:android:8c59a395f61ed98b68a60e",
+        "android_client_info": {
+          "package_name": "com.example.foodappprm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqes1biTjnq1jJgs3SJLAW1akYHhxbRNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
