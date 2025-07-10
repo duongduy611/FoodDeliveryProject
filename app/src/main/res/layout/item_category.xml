@@ -23,7 +23,7 @@
             android:padding="8dp"
             android:src="@drawable/baseline_fastfood_24"
             android:contentDescription="Category Icon"
-            android:tint="@color/white"/>
+            app:tint="@color/white"/>
 
         <TextView
             android:id="@+id/categoryNameTextView"

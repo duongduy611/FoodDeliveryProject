@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodappprm.Models.DailyMeal;
 import com.example.foodappprm.R;
+import com.example.foodappprm.activities.DetailDailyMealActivity;
 
 import java.util.List;
+import android.content.Intent;
 
 public class DailyMealAdapter extends RecyclerView.Adapter<DailyMealAdapter.ViewHolder> {
 
@@ -37,6 +39,15 @@ public class DailyMealAdapter extends RecyclerView.Adapter<DailyMealAdapter.View
         holder.name.setText(list.get(position).getName());
         holder.description.setText(list.get(position).getDescription());
         holder.discount.setText(list.get(position).getDiscount());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailDailyMealActivity.class);
+                intent.putExtra("type", list.get(position).getType());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
