@@ -19,8 +19,8 @@
 
     <fragment
         android:id="@+id/nav_favorite"
-        android:name="com.example.foodappprm.ui.slideshow.FavoriteFragment"
-        android:label="@string/menu_daily_meal"
+        android:name="com.example.foodappprm.ui.favourite.FavouriteFragment"
+        android:label="Favorite"
         tools:layout="@layout/fragment_favorite" />
     <fragment
         android:id="@+id/nav_my_cart"

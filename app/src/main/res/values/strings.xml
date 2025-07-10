@@ -35,4 +35,9 @@
     <string name="error_loading_products">Error loading products: %1$s</string>
     <string name="in_stock">In Stock</string>
     <string name="out_of_stock">Out of Stock</string>
+    <string name="todo">todo</string>
+    <string name="description_here">description_here</string>
+    <string name="food_name">food_name</string>
+    <string name="view_more">view_more</string>
+    <string name="your_favourite_and_testy_food_is_here">your favourite and testy food is here</string>
 </resources>
