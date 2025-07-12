@@ -1,25 +1,22 @@
 package com.example.foodappprm.adapter;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.example.foodappprm.R;
 import com.example.foodappprm.model.Cart;
-
 import java.util.List;
+import java.util.Locale;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
-    private List<Cart> cartItems;
-    private CartItemClickListener listener;
+    private final List<Cart> cartItems;
+    private final CartItemClickListener listener;
 
     public interface CartItemClickListener {
         void onQuantityChanged(int position, int newQuantity);
@@ -34,7 +31,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     @NonNull
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_cart, parent, false);
         return new CartViewHolder(view);
     }
 
@@ -49,69 +47,67 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return cartItems.size();
     }
 
-    public void updateCartItems(List<Cart> newItems) {
-        this.cartItems = newItems;
-        notifyDataSetChanged();
-    }
-
-    class CartViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView;
-        private TextView nameText;
-        private TextView priceText;
-        private TextView quantityText;
-        private TextView mealLabel;
-        private TextView includedItems;
-        private ImageButton decreaseBtn;
-        private ImageButton increaseBtn;
-        private ImageButton removeBtn;
+    public class CartViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView imageView;
+        private final TextView nameText;
+        private final TextView priceText;
+        private final TextView quantityText;
+        private final TextView includedItemsText;
+        private final ImageButton decreaseButton;
+        private final ImageButton increaseButton;
+        private final ImageButton deleteButton;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.cartItemImage);
             nameText = itemView.findViewById(R.id.cartItemName);
             priceText = itemView.findViewById(R.id.cartItemPrice);
-            quantityText = itemView.findViewById(R.id.quantity);
-            mealLabel = itemView.findViewById(R.id.mealLabel);
-            includedItems = itemView.findViewById(R.id.includedItems);
-            decreaseBtn = itemView.findViewById(R.id.decreaseQuantity);
-            increaseBtn = itemView.findViewById(R.id.increaseQuantity);
-            removeBtn = itemView.findViewById(R.id.removeItem);
+            quantityText = itemView.findViewById(R.id.quantityText);
+            includedItemsText = itemView.findViewById(R.id.includedItemsText);
+            decreaseButton = itemView.findViewById(R.id.decreaseButton);
+            increaseButton = itemView.findViewById(R.id.increaseButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
 
         public void bind(Cart item, int position) {
             nameText.setText(item.getName());
-            priceText.setText(String.format("$%.2f", item.getPrice()));
+            priceText.setText(String.format(Locale.US, "$%.2f", item.getPrice()));
             quantityText.setText(String.valueOf(item.getQuantity()));
 
-            // Hiển thị thông tin meal nếu là combo
+            // Handle meal combos
             if (item.isMeal()) {
-                mealLabel.setVisibility(View.VISIBLE);
-                includedItems.setVisibility(View.VISIBLE);
-                String includedText = "Includes: " + TextUtils.join(", ", item.getIncludedProducts());
-                includedItems.setText(includedText);
+                includedItemsText.setVisibility(View.VISIBLE);
+                String includedText = "Includes: " + String.join(", ", item.getIncludedProducts());
+                includedItemsText.setText(includedText);
             } else {
-                mealLabel.setVisibility(View.GONE);
-                includedItems.setVisibility(View.GONE);
+                includedItemsText.setVisibility(View.GONE);
             }
 
-            Glide.with(itemView.getContext())
-                    .load(item.getImage())
-                    .placeholder(R.drawable.ic_menu_gallery)
+            // Load image using Glide
+            String imageUrl = item.getImage();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.error_image)
                     .into(imageView);
+            } else {
+                imageView.setImageResource(R.drawable.error_image);
+            }
 
-            decreaseBtn.setOnClickListener(v -> {
-                if (item.getQuantity() > 1) {
-                    listener.onQuantityChanged(position, item.getQuantity() - 1);
+            // Setup click listeners
+            decreaseButton.setOnClickListener(v -> {
+                int newQuantity = item.getQuantity() - 1;
+                if (newQuantity >= 1) {
+                    listener.onQuantityChanged(position, newQuantity);
                 }
             });
 
-            increaseBtn.setOnClickListener(v -> {
-                listener.onQuantityChanged(position, item.getQuantity() + 1);
+            increaseButton.setOnClickListener(v -> {
+                int newQuantity = item.getQuantity() + 1;
+                listener.onQuantityChanged(position, newQuantity);
             });
 
-            removeBtn.setOnClickListener(v -> {
-                listener.onRemoveItem(position);
-            });
+            deleteButton.setOnClickListener(v -> listener.onRemoveItem(position));
         }
     }
 }

@@ -20,6 +20,7 @@
         android:layout_marginBottom="16dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:text="Total: $0.00"
         app:layout_constraintBottom_toTopOf="@+id/checkoutButton"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -163,78 +163,66 @@ public class ProductDetailFragment extends Fragment {
         double price = getArguments().getDouble("price", 0.0);
         String image = getArguments().getString("image", "");
 
-        if (productId.isEmpty()) {
+        if (TextUtils.isEmpty(productId)) {
             showError("Invalid product");
             return;
         }
 
-        // Hiện loading indicator (nếu có)
         showLoading(true);
 
-        // Tạo cart item mới
-        Cart cartItem = new Cart(productId, name, image, price, quantity);
-
-        // Thêm vào Firestore với retry mechanism
-        addToCartWithRetry(userId, productId, cartItem, 3);
-    }
-
-    private void addToCartWithRetry(String userId, String productId, Cart cartItem, int maxRetries) {
-        if (maxRetries <= 0) {
-            showLoading(false);
-            showError("Failed to add to cart after multiple attempts");
-            return;
-        }
-
-        db.collection("users")
-            .document(userId)
-            .collection("cart")
-            .document(productId)
+        // Check if product already exists in cart
+        db.collection("carts")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("productId", productId)
             .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    Cart existingItem = documentSnapshot.toObject(Cart.class);
-                    if (existingItem != null) {
-                        cartItem.setQuantity(existingItem.getQuantity() + quantity);
+            .addOnSuccessListener(queryDocuments -> {
+                Cart cartItem;
+                if (!queryDocuments.isEmpty()) {
+                    // If product exists, update quantity
+                    cartItem = queryDocuments.getDocuments().get(0).toObject(Cart.class);
+                    if (cartItem != null) {
+                        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                    } else {
+                        cartItem = new Cart(userId, productId, name, image, price, quantity);
                     }
+                } else {
+                    // If product doesn't exist, create new cart item
+                    cartItem = new Cart(userId, productId, name, image, price, quantity);
                 }
 
-                db.collection("users")
-                    .document(userId)
-                    .collection("cart")
-                    .document(productId)
+                // Save to Firestore
+                db.collection("carts")
+                    .document(cartItem.getId() != null ? cartItem.getId() : db.collection("carts").document().getId())
                     .set(cartItem)
                     .addOnSuccessListener(aVoid -> {
                         showLoading(false);
-                        Toast.makeText(getContext(), "Added to cart successfully!", Toast.LENGTH_SHORT).show();
-                        navigateToCart();
+                        showSuccess("Added to cart successfully");
+                        // Optionally navigate to cart
+                        // navigateToCart();
                     })
                     .addOnFailureListener(e -> {
-                        if (!isNetworkAvailable()) {
-                            showLoading(false);
-                            showError("No internet connection. Please check your network and try again.");
-                        } else {
-                            // Retry with reduced count
-                            addToCartWithRetry(userId, productId, cartItem, maxRetries - 1);
-                        }
+                        showLoading(false);
+                        showError("Failed to add to cart: " + e.getMessage());
                     });
             })
             .addOnFailureListener(e -> {
-                if (!isNetworkAvailable()) {
-                    showLoading(false);
-                    showError("No internet connection. Please check your network and try again.");
-                } else {
-                    // Retry with reduced count
-                    addToCartWithRetry(userId, productId, cartItem, maxRetries - 1);
-                }
+                showLoading(false);
+                showError("Failed to check cart: " + e.getMessage());
             });
     }
 
+    private void showSuccess(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showError(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
     private void showLoading(boolean show) {
-        // Implement loading indicator here if you have one
-        // For example:
-        // if (progressBar != null) {
-        //     progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        // }
+        if (addToCartButton != null) {
+            addToCartButton.setEnabled(!show);
+        }
     }
 
     private void navigateToCart() {
@@ -244,9 +232,5 @@ public class ProductDetailFragment extends Fragment {
 
     private void navigateBack() {
         NavHostFragment.findNavController(this).popBackStack();
-    }
-
-    private void showError(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

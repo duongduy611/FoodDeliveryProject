@@ -4,49 +4,52 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
+import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.foodappprm.R;
-import com.example.foodappprm.adapter.CartAdapter;
+import com.example.foodappprm.adapters.CartAdapter;
 import com.example.foodappprm.model.Cart;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class MyCartFragment extends Fragment implements CartAdapter.CartItemClickListener {
-    private RecyclerView recyclerView;
-    private TextView totalPriceTextView;
-    private Button checkoutButton;
+public class MyCartFragment extends Fragment implements CartAdapter.CartItemListener {
     private List<Cart> cartItems;
     private CartAdapter adapter;
-    private FirebaseFirestore db;
+    private TextView totalPriceTextView;
     private String userId;
+    private FirebaseFirestore db;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_cart, container, false);
 
-        // Initialize views
-        recyclerView = view.findViewById(R.id.cartRecyclerView);
-        totalPriceTextView = view.findViewById(R.id.totalAmount);
-        checkoutButton = view.findViewById(R.id.checkoutButton);
-
-        // Initialize Firebase
+        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Get current user
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(requireContext(), "Please login to view cart", Toast.LENGTH_SHORT).show();
+            return view;
+        }
+        userId = auth.getCurrentUser().getUid();
+
+        // Initialize views
+        RecyclerView recyclerView = view.findViewById(R.id.cartRecyclerView);
+        totalPriceTextView = view.findViewById(R.id.totalAmount);
+        Button checkoutButton = view.findViewById(R.id.checkoutButton);
 
         // Setup RecyclerView
         cartItems = new ArrayList<>();
-        adapter = new CartAdapter(cartItems, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CartAdapter(requireContext(), cartItems, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
         // Load cart items
@@ -59,57 +62,82 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
     }
 
     private void loadCartItems() {
-        db.collection("users").document(userId)
-            .collection("cart")
+        db.collection("carts")
+            .whereEqualTo("userId", userId)
             .addSnapshotListener((value, error) -> {
                 if (error != null) {
-                    // Handle error
+                    Toast.makeText(requireContext(), "Error loading cart: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                cartItems.clear();
                 if (value != null) {
-                    for (DocumentSnapshot doc : value.getDocuments()) {
+                    cartItems.clear();
+                    for (var doc : value.getDocuments()) {
                         Cart item = doc.toObject(Cart.class);
                         if (item != null) {
+                            item.setId(doc.getId());
                             cartItems.add(item);
                         }
                     }
+                    adapter.notifyDataSetChanged();
+                    updateTotalPrice();
                 }
-
-                adapter.updateCartItems(cartItems);
-                updateTotalPrice();
             });
+    }
+
+    @Override
+    public void onQuantityChanged(Cart item, int newQuantity) {
+        // Cập nhật số lượng trong local list
+        int position = cartItems.indexOf(item);
+        if (position != -1) {
+            cartItems.get(position).setQuantity(newQuantity);
+            // Cập nhật tổng tiền ngay lập tức
+            updateTotalPrice();
+        }
+
+        // Cập nhật lên Firestore
+        db.collection("carts")
+            .document(item.getId())
+            .update(
+                "quantity", newQuantity,
+                "totalPrice", item.getPrice() * newQuantity
+            )
+            .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                "Failed to update quantity: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void updateTotalPrice() {
         double total = 0;
         for (Cart item : cartItems) {
-            total += item.getPrice() * item.getQuantity();
+            total += (item.getPrice() * item.getQuantity());
         }
-        totalPriceTextView.setText(String.format("Total: $%.2f", total));
+        totalPriceTextView.setText(String.format(Locale.US, "Tổng cộng: %,.0fđ", total));
     }
 
     @Override
-    public void onQuantityChanged(int position, int newQuantity) {
-        Cart item = cartItems.get(position);
-        db.collection("users").document(userId)
-            .collection("cart")
-            .document(item.getItemId())
-            .update("quantity", newQuantity);
-    }
+    public void onRemoveItem(Cart item) {
+        int position = cartItems.indexOf(item);
+        if (position != -1) {
+            cartItems.remove(position);
+            adapter.notifyItemRemoved(position);
+            // Cập nhật tổng tiền sau khi xóa
+            updateTotalPrice();
+        }
 
-    @Override
-    public void onRemoveItem(int position) {
-        Cart item = cartItems.get(position);
-        db.collection("users").document(userId)
-            .collection("cart")
-            .document(item.getItemId())
-            .delete();
+        db.collection("carts")
+            .document(item.getId())
+            .delete()
+            .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                "Failed to remove item: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void processCheckout() {
-        // Implement checkout logic here
-        // This could involve creating an order, clearing the cart, etc.
+        if (cartItems.isEmpty()) {
+            Toast.makeText(requireContext(), "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Navigate to checkout fragment
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_nav_my_cart_to_checkout);
     }
 }

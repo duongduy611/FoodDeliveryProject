@@ -16,12 +16,13 @@ import com.example.foodappprm.R;
 import com.example.foodappprm.model.Cart;
 
 import java.util.List;
+import java.util.Locale;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
-    private Context context;
-    private List<Cart> cartItems;
-    private CartItemListener listener;
+    private final Context context;
+    private final List<Cart> cartItems;
+    private final CartItemListener listener;
 
     public interface CartItemListener {
         void onQuantityChanged(Cart item, int newQuantity);
@@ -48,41 +49,47 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         // Load image using Glide
         Glide.with(context)
                 .load(item.getImage())
-                .placeholder(R.drawable.placeholder_image)
+                .placeholder(R.drawable.error_image)
                 .into(holder.cartItemImage);
 
         holder.cartItemName.setText(item.getName());
-        holder.cartItemPrice.setText(String.format("$%.2f", item.getPrice()));
-        holder.quantity.setText(String.valueOf(item.getQuantity()));
+        // Hiển thị tổng giá tiền của item (price * quantity)
+        holder.cartItemPrice.setText(String.format(Locale.US, "%,.0fđ", item.getTotalPrice()));
+        holder.quantityText.setText(String.valueOf(item.getQuantity()));
 
         // Handle meal-specific UI elements
         if (item.isMeal()) {
-            holder.mealLabel.setVisibility(View.VISIBLE);
-            holder.includedItems.setVisibility(View.VISIBLE);
-            // Join the included products with commas
+            holder.includedItemsText.setVisibility(View.VISIBLE);
             String includedItemsText = "Includes: " + String.join(", ", item.getIncludedProducts());
-            holder.includedItems.setText(includedItemsText);
+            holder.includedItemsText.setText(includedItemsText);
         } else {
-            holder.mealLabel.setVisibility(View.GONE);
-            holder.includedItems.setVisibility(View.GONE);
+            holder.includedItemsText.setVisibility(View.GONE);
         }
 
         // Quantity controls
-        holder.decreaseQuantity.setOnClickListener(v -> {
+        holder.decreaseButton.setOnClickListener(v -> {
             int newQuantity = item.getQuantity() - 1;
-            if (listener != null) {
+            if (newQuantity >= 1 && listener != null) {
+                // Cập nhật quantity và giá ngay lập tức trên UI
+                item.setQuantity(newQuantity);
+                holder.quantityText.setText(String.valueOf(newQuantity));
+                holder.cartItemPrice.setText(String.format(Locale.US, "%,.0fđ", item.getTotalPrice()));
                 listener.onQuantityChanged(item, newQuantity);
             }
         });
 
-        holder.increaseQuantity.setOnClickListener(v -> {
-            int newQuantity = item.getQuantity() + 1;
+        holder.increaseButton.setOnClickListener(v -> {
             if (listener != null) {
+                int newQuantity = item.getQuantity() + 1;
+                // Cập nhật quantity và giá ngay lập tức trên UI
+                item.setQuantity(newQuantity);
+                holder.quantityText.setText(String.valueOf(newQuantity));
+                holder.cartItemPrice.setText(String.format(Locale.US, "%,.0fđ", item.getTotalPrice()));
                 listener.onQuantityChanged(item, newQuantity);
             }
         });
 
-        holder.removeItem.setOnClickListener(v -> {
+        holder.deleteButton.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onRemoveItem(item);
             }
@@ -96,20 +103,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView cartItemImage;
-        TextView cartItemName, cartItemPrice, quantity, mealLabel, includedItems;
-        ImageButton decreaseQuantity, increaseQuantity, removeItem;
+        TextView cartItemName, cartItemPrice, quantityText, includedItemsText;
+        ImageButton decreaseButton, increaseButton, deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cartItemImage = itemView.findViewById(R.id.cartItemImage);
             cartItemName = itemView.findViewById(R.id.cartItemName);
             cartItemPrice = itemView.findViewById(R.id.cartItemPrice);
-            quantity = itemView.findViewById(R.id.quantity);
-            mealLabel = itemView.findViewById(R.id.mealLabel);
-            includedItems = itemView.findViewById(R.id.includedItems);
-            decreaseQuantity = itemView.findViewById(R.id.decreaseQuantity);
-            increaseQuantity = itemView.findViewById(R.id.increaseQuantity);
-            removeItem = itemView.findViewById(R.id.removeItem);
+            quantityText = itemView.findViewById(R.id.quantityText);
+            includedItemsText = itemView.findViewById(R.id.includedItemsText);
+            decreaseButton = itemView.findViewById(R.id.decreaseButton);
+            increaseButton = itemView.findViewById(R.id.increaseButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }

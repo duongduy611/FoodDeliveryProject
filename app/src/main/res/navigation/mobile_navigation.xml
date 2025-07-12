@@ -22,11 +22,22 @@
         android:name="com.example.foodappprm.ui.slideshow.FavoriteFragment"
         android:label="@string/menu_daily_meal"
         tools:layout="@layout/fragment_favorite" />
+
+    <fragment
+        android:id="@+id/nav_checkout"
+        android:name="com.example.foodappprm.ui.checkout.CheckoutFragment"
+        android:label="Checkout"
+        tools:layout="@layout/fragment_checkout" />
+
     <fragment
         android:id="@+id/nav_my_cart"
         android:name="com.example.foodappprm.ui.mycart.MyCartFragment"
         android:label="@string/my_cart"
-        tools:layout="@layout/fragment_my_cart" />
+        tools:layout="@layout/fragment_my_cart">
+        <action
+            android:id="@+id/action_nav_my_cart_to_checkout"
+            app:destination="@id/nav_checkout" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_product_list"
