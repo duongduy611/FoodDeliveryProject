@@ -11,9 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.foodappprm.R;
+import com.example.foodappprm.model.Cart;
 import com.example.foodappprm.model.Product;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.content.Context;
 import android.text.TextUtils;
 
 public class ProductDetailFragment extends Fragment {
@@ -37,9 +43,21 @@ public class ProductDetailFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Cấu hình Firestore để hỗ trợ offline
+        db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+        db.setFirestoreSettings(settings);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        db = FirebaseFirestore.getInstance();
         initViews(view);
         setupBackButton();
         setupQuantityControls();
@@ -95,6 +113,8 @@ public class ProductDetailFragment extends Fragment {
     }
 
     private void setupQuantityControls() {
+        updateQuantityDisplay();
+
         decreaseButton.setOnClickListener(v -> {
             if (quantity > 1) {
                 quantity--;
@@ -107,28 +127,110 @@ public class ProductDetailFragment extends Fragment {
             updateQuantityDisplay();
         });
 
-        addToCartButton.setOnClickListener(v -> {
-            showMessage("Added " + quantity + " item(s) to cart");
-        });
-
-        updateQuantityDisplay();
+        addToCartButton.setOnClickListener(v -> addToCart());
     }
 
     private void updateQuantityDisplay() {
-        if (quantityTextView != null) {
-            quantityTextView.setText(String.valueOf(quantity));
+        quantityTextView.setText(String.valueOf(quantity));
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void addToCart() {
+        if (getArguments() == null) {
+            showError("Product information not available");
+            return;
         }
+
+        if (!isNetworkAvailable()) {
+            showError("No internet connection. Please check your network and try again.");
+            return;
+        }
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            showError("Please login to add items to cart");
+            return;
+        }
+
+        String userId = auth.getCurrentUser().getUid();
+        String productId = getArguments().getString("product_id", "");
+        String name = getArguments().getString("name", "");
+        double price = getArguments().getDouble("price", 0.0);
+        String image = getArguments().getString("image", "");
+
+        if (TextUtils.isEmpty(productId)) {
+            showError("Invalid product");
+            return;
+        }
+
+        showLoading(true);
+
+        // Check if product already exists in cart
+        db.collection("carts")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("productId", productId)
+            .get()
+            .addOnSuccessListener(queryDocuments -> {
+                Cart cartItem;
+                if (!queryDocuments.isEmpty()) {
+                    // If product exists, update quantity
+                    cartItem = queryDocuments.getDocuments().get(0).toObject(Cart.class);
+                    if (cartItem != null) {
+                        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                    } else {
+                        cartItem = new Cart(userId, productId, name, image, price, quantity);
+                    }
+                } else {
+                    // If product doesn't exist, create new cart item
+                    cartItem = new Cart(userId, productId, name, image, price, quantity);
+                }
+
+                // Save to Firestore
+                db.collection("carts")
+                    .document(cartItem.getId() != null ? cartItem.getId() : db.collection("carts").document().getId())
+                    .set(cartItem)
+                    .addOnSuccessListener(aVoid -> {
+                        showLoading(false);
+                        showSuccess("Added to cart successfully");
+                        // Optionally navigate to cart
+                        // navigateToCart();
+                    })
+                    .addOnFailureListener(e -> {
+                        showLoading(false);
+                        showError("Failed to add to cart: " + e.getMessage());
+                    });
+            })
+            .addOnFailureListener(e -> {
+                showLoading(false);
+                showError("Failed to check cart: " + e.getMessage());
+            });
+    }
+
+    private void showSuccess(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void showError(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private void showMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showLoading(boolean show) {
+        if (addToCartButton != null) {
+            addToCartButton.setEnabled(!show);
+        }
+    }
+
+    private void navigateToCart() {
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_productDetailFragment_to_myCartFragment);
     }
 
     private void navigateBack() {
-        NavHostFragment.findNavController(this).navigateUp();
+        NavHostFragment.findNavController(this).popBackStack();
     }
 }
