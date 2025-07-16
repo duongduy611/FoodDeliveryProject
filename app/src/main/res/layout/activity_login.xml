@@ -113,7 +113,7 @@
         android:layout_height="wrap_content"
         android:text="@string/register"
         android:textAlignment="center"
-        android:textColor="@color/purple_700"
+
         android:textSize="16sp"
         android:textStyle="bold"
         android:id="@+id/registerRedirect"
