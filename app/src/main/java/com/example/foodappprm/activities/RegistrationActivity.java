@@ -37,6 +37,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_registration);
+        getSupportActionBar().hide();
 
         mAuth = FirebaseAuth.getInstance();
         fullname = findViewById(R.id.editText1);

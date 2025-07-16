@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().hide();
 
         mAuth = FirebaseAuth.getInstance();
         email = findViewById(R.id.login_email);
