@@ -19,6 +19,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,9 +53,31 @@ public class LoginActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                     @Override
                                     public void onSuccess(AuthResult authResult) {
-                                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                        finish();
+                                        // Sau khi đăng nhập thành công, kiểm tra role
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        String uid = mAuth.getCurrentUser().getUid();
+                                        db.collection("users").document(uid).get()
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                        if (documentSnapshot.exists()) {
+                                                            String role = documentSnapshot.getString("role");
+                                                            if ("shipper".equals(role)) {
+                                                                Toast.makeText(LoginActivity.this, "Login Shipper Successful", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(LoginActivity.this, ShipperActivity.class));
+                                                            } else {
+                                                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                                            }
+                                                            finish();
+                                                        } else {
+                                                            Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(LoginActivity.this, "Failed to get user role: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                });
                                     }
                                 }).addOnFailureListener( new OnFailureListener() {
                                     @Override
