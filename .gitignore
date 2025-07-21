@@ -1,15 +1,26 @@
+# Bỏ qua toàn bộ thư mục .idea/
+.idea/*
+
+# Giữ lại các file cấu hình dùng chung nếu cần
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/runConfigurations/
+!.idea/codeStyles/
+
+# Bỏ qua các file cá nhân hoặc không cần thiết trong .idea/
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/caches/
+.idea/libraries/
+
+# Các file hệ thống hoặc tạm thời
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
