@@ -16,25 +16,42 @@ import java.util.List;
 
 public class FeaturedVerAdapter extends RecyclerView.Adapter<FeaturedVerAdapter.ViewHolder> {
 
-    List<FeaturedVerModel> list;
+    // 1. Định nghĩa interface để lắng nghe sự kiện
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
 
-    public FeaturedVerAdapter(List<FeaturedVerModel> list) {
+    private final List<FeaturedVerModel> list;
+    private final OnItemClickListener listener;
+
+    // 2. Cập nhật constructor để nhận listener
+    public FeaturedVerAdapter(List<FeaturedVerModel> list, OnItemClickListener listener) {
         this.list = list;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    public FeaturedVerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.featured_ver_item, parent, false));
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.featured_ver_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FeaturedVerAdapter.ViewHolder holder, int position) {
-        holder.imageView.setImageResource(list.get(position).getImage());
-        holder.name.setText(list.get(position).getName());
-        holder.description.setText(list.get(position).getDescription());
-        holder.rating.setText(list.get(position).getRating());
-        holder.timing.setText(list.get(position).getTiming());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        FeaturedVerModel model = list.get(position);
+        holder.imageView.setImageResource(model.getImage());
+        holder.name.setText(model.getName());
+        holder.description.setText(model.getDescription());
+        holder.rating.setText(model.getRating());
+        holder.timing.setText(model.getTiming());
+
+        // 3. Gán sự kiện click cho mỗi item
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(position);
+            }
+        });
     }
 
     @Override
@@ -43,9 +60,9 @@ public class FeaturedVerAdapter extends RecyclerView.Adapter<FeaturedVerAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         ImageView imageView;
-        TextView name,description,rating,timing;
+        TextView name, description, rating, timing;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.detailed_img);
@@ -53,9 +70,6 @@ public class FeaturedVerAdapter extends RecyclerView.Adapter<FeaturedVerAdapter.
             description = itemView.findViewById(R.id.detailed_description);
             rating = itemView.findViewById(R.id.detailed_rating);
             timing = itemView.findViewById(R.id.detailed_timing);
-
         }
-
-        // You can add methods to bind data to the views here
     }
 }

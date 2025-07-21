@@ -2,6 +2,7 @@ package com.example.foodappprm.Models;
 
 public class FeaturedModel {
     int image;
+    String productId;
     String name;
     String desc;
 
@@ -11,6 +12,19 @@ public class FeaturedModel {
         this.desc = desc;
     }
 
+    public FeaturedModel(int image, String productId, String name, String desc) {
+        this.image = image;
+        this.productId = productId;
+        this.name = name;
+        this.desc = desc;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
     public int getImage() {
         return image;
     }
