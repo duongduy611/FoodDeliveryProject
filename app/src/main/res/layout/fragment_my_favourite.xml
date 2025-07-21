@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:fontFamily="@font/amarante"
-            android:text="10 weekend Delicious \nDinner Recipes"
+            android:text="@string/let_make_your_day_nsweet_and_delicious_food"
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -36,18 +36,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/imageView"
             app:layout_constraintVertical_bias="0.7" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:padding="8dp"
-            android:text="view more"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@id/imageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="8dp" />
 
         <TextView
             android:layout_margin="10dp"
@@ -59,23 +47,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:background="@color/white"
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
         <androidx.viewpager2.widget.ViewPager2
-            android:background="@color/white"
             android:id="@+id/view_pager2"
             android:layout_width="match_parent"
-            android:layout_height="450dp"
+            android:layout_height="500dp"
+            android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

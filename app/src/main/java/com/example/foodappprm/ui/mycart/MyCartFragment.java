@@ -1,66 +1,143 @@
 package com.example.foodappprm.ui.mycart;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.*;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodappprm.R;
+import com.example.foodappprm.adapters.CartAdapter;
+import com.example.foodappprm.model.Cart;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MyCartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MyCartFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public MyCartFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyCartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MyCartFragment newInstance(String param1, String param2) {
-        MyCartFragment fragment = new MyCartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class MyCartFragment extends Fragment implements CartAdapter.CartItemListener {
+    private List<Cart> cartItems;
+    private CartAdapter adapter;
+    private TextView totalPriceTextView;
+    private String userId;
+    private FirebaseFirestore db;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_my_cart, container, false);
+
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Get current user
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(requireContext(), "Please login to view cart", Toast.LENGTH_SHORT).show();
+            return view;
         }
+        userId = auth.getCurrentUser().getUid();
+
+        // Initialize views
+        RecyclerView recyclerView = view.findViewById(R.id.cartRecyclerView);
+        totalPriceTextView = view.findViewById(R.id.totalAmount);
+        Button checkoutButton = view.findViewById(R.id.checkoutButton);
+
+        // Setup RecyclerView
+        cartItems = new ArrayList<>();
+        adapter = new CartAdapter(requireContext(), cartItems, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
+
+        // Load cart items
+        loadCartItems();
+
+        // Setup checkout button
+        checkoutButton.setOnClickListener(v -> processCheckout());
+
+        return view;
+    }
+
+    private void loadCartItems() {
+        db.collection("carts")
+            .whereEqualTo("userId", userId)
+            .addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Toast.makeText(requireContext(), "Error loading cart: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (value != null) {
+                    cartItems.clear();
+                    for (var doc : value.getDocuments()) {
+                        Cart item = doc.toObject(Cart.class);
+                        if (item != null) {
+                            item.setId(doc.getId());
+                            cartItems.add(item);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    updateTotalPrice();
+                }
+            });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_cart, container, false);
+    public void onQuantityChanged(Cart item, int newQuantity) {
+        // Cập nhật số lượng trong local list
+        int position = cartItems.indexOf(item);
+        if (position != -1) {
+            cartItems.get(position).setQuantity(newQuantity);
+            // Cập nhật tổng tiền ngay lập tức
+            updateTotalPrice();
+        }
+
+        // Cập nhật lên Firestore
+        db.collection("carts")
+            .document(item.getId())
+            .update(
+                "quantity", newQuantity,
+                "totalPrice", item.getPrice() * newQuantity
+            )
+            .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                "Failed to update quantity: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void updateTotalPrice() {
+        double total = 0;
+        for (Cart item : cartItems) {
+            total += (item.getPrice() * item.getQuantity());
+        }
+        totalPriceTextView.setText(String.format(Locale.US, "Tổng cộng: %,.0fđ", total));
+    }
+
+    @Override
+    public void onRemoveItem(Cart item) {
+        int position = cartItems.indexOf(item);
+        if (position != -1) {
+            cartItems.remove(position);
+            adapter.notifyItemRemoved(position);
+            // Cập nhật tổng tiền sau khi xóa
+            updateTotalPrice();
+        }
+
+        db.collection("carts")
+            .document(item.getId())
+            .delete()
+            .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                "Failed to remove item: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void processCheckout() {
+        if (cartItems.isEmpty()) {
+            Toast.makeText(requireContext(), "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Navigate to checkout fragment
+        NavHostFragment.findNavController(this)
+            .navigate(R.id.action_nav_my_cart_to_checkout);
     }
 }
