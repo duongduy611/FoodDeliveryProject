@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                             break;
                         case "shipper":
                             // Redirect to Shipper Activity
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            startActivity(new Intent(LoginActivity.this, DetailDailyMealActivity.class));
                             break;
                         default:
                             // Redirect to User Activity
