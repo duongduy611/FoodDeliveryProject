@@ -20,8 +20,22 @@
     <fragment
         android:id="@+id/nav_favorite"
         android:name="com.example.foodappprm.ui.favourite.FavouriteFragment"
-        android:label="Favorite"
-        tools:layout="@layout/fragment_favorite" />
+        android:label="Suggest Favorite"
+        tools:layout="@layout/fragment_favorite">
+        <action
+            android:id="@+id/action_nav_favorite_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_my_favorite"
+        android:name="com.example.foodappprm.ui.favourite.MyFavouriteFragment"
+        android:label="My Favorite"
+        tools:layout="@layout/fragment_my_favourite">
+        <action
+            android:id="@+id/action_nav_my_favorite_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_checkout"
