@@ -1,6 +1,7 @@
 package com.example.foodappprm.ui.mycart;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,10 +63,14 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemList
     }
 
     private void loadCartItems() {
+        // Log để kiểm tra userId
+        Log.d("MyCartFragment", "Loading cart items for user: " + userId);
+
         db.collection("carts")
             .whereEqualTo("userId", userId)
             .addSnapshotListener((value, error) -> {
                 if (error != null) {
+                    Log.e("MyCartFragment", "Error loading cart: ", error);
                     Toast.makeText(requireContext(), "Error loading cart: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -77,10 +82,14 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemList
                         if (item != null) {
                             item.setId(doc.getId());
                             cartItems.add(item);
+                            // Log từng item để kiểm tra
+                            Log.d("MyCartFragment", "Loaded cart item: " + item.getProductName() + ", price: " + item.getPrice());
                         }
                     }
                     adapter.notifyDataSetChanged();
                     updateTotalPrice();
+                    // Log số lượng item đã load
+                    Log.d("MyCartFragment", "Total items loaded: " + cartItems.size());
                 }
             });
     }

@@ -106,7 +106,7 @@ public class Cart {
 
     public void setPrice(double price) {
         this.price = price;
-        this.totalPrice = this.price * this.quantity;
+        this.totalPrice = price * quantity;
     }
 
     public int getQuantity() {
@@ -115,7 +115,7 @@ public class Cart {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-        this.totalPrice = this.price * this.quantity;
+        this.totalPrice = price * quantity;
     }
 
     public double getTotalPrice() {
@@ -135,7 +135,7 @@ public class Cart {
     }
 
     public List<String> getIncludedProducts() {
-        return includedProducts != null ? includedProducts : new ArrayList<>();
+        return includedProducts;
     }
 
     public void setIncludedProducts(List<String> includedProducts) {
