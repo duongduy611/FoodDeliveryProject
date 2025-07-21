@@ -40,4 +40,8 @@
     <string name="food_name">food_name</string>
     <string name="view_more">view_more</string>
     <string name="your_favourite_and_testy_food_is_here">your favourite and testy food is here</string>
+    <string name="suggest_favourite">Suggest favourite</string>
+    <string name="my_favourite">My Favourite</string>
+    <string name="let_make_your_day_nsweet_and_delicious_food">Let make your day \nsweet and delicious food</string>
+    <string name="y_u_th_ch">Yêu thích</string>
 </resources>

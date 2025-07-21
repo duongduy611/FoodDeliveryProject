@@ -14,8 +14,12 @@
             android:title="@string/menu_daily_meal" />
         <item
             android:id="@+id/nav_favorite"
+            android:icon="@drawable/baseline_food_bank_24"
+            android:title="@string/suggest_favourite" />
+        <item
+            android:id="@+id/nav_my_favorite"
             android:icon="@drawable/baseline_favorite_24"
-            android:title="@string/menu_favorite" />
+            android:title="@string/my_favourite" />
         <item
             android:id="@+id/nav_my_cart"
             android:icon="@drawable/baseline_shopping_cart_24"
