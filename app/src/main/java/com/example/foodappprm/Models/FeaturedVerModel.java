@@ -3,6 +3,8 @@ package com.example.foodappprm.Models;
 public class FeaturedVerModel {
 
     int image;
+
+    String productId;
     String name;
     String description;
     String rating;
@@ -16,8 +18,25 @@ public class FeaturedVerModel {
         this.timing = timing;
     }
 
+    public FeaturedVerModel(int image, String productId, String name, String description, String rating, String timing) {
+        this.image = image;
+        this.productId = productId;
+        this.name = name;
+        this.description = description;
+        this.rating = rating;
+        this.timing = timing;
+    }
+
     public int getImage() {
         return image;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public void setImage(int image) {
