@@ -22,12 +22,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mStore;
     private EditText fullname, registerEmail, registerPassword;
     private Button registerButton;
     private TextView loginRedirect;
@@ -40,6 +40,7 @@ public class RegistrationActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         mAuth = FirebaseAuth.getInstance();
+        mStore = FirebaseFirestore.getInstance();
         fullname = findViewById(R.id.editText1);
         registerEmail = findViewById(R.id.register_email);
         registerPassword = findViewById(R.id.register_password);
@@ -67,46 +68,53 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = mAuth.getCurrentUser();
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    FirebaseUser user = mAuth.getCurrentUser();
 
-                                if (user != null) {
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(name)
-                                            .build();
+                                    if (user != null) {
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name)
+                                                .build();
 
-                                    user.updateProfile(profileUpdates)
-                                            .addOnCompleteListener(profileTask -> {
-                                                if (profileTask.isSuccessful()) {
-                                                    Log.d("REGISTER", "User profile updated.");
-                                                }
-                                            });
+                                        user.updateProfile(profileUpdates)
+                                                .addOnCompleteListener(profileTask -> {
+                                                    if (profileTask.isSuccessful()) {
+                                                        Log.d("REGISTER", "User profile updated.");
+                                                    }
+                                                });
 
-                                    String uid = user.getUid();
-                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-                                    User newUser = new User(name, email);
-                                    ref.child(uid).setValue(newUser)
-                                            .addOnCompleteListener(databaseTask -> {
-                                                if (databaseTask.isSuccessful()) {
-                                                    Log.d("REGISTER", "User data saved to database");
-                                                    Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                                    startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                                                    finish();
-                                                } else {
-                                                    Log.e("REGISTER", "Failed to save user data", databaseTask.getException());
-                                                    Toast.makeText(RegistrationActivity.this, "Failed to save user data", Toast.LENGTH_LONG).show();
-                                                }
-                                            });
+                                        String uid = user.getUid();
+                                        User newUser = new User(name, email);
+                                        newUser.setRole("user");
+
+                                        mStore.collection("Users").document(uid).set(newUser)
+                                                .addOnCompleteListener(databaseTask -> {
+                                                    if (databaseTask.isSuccessful()) {
+                                                        Log.d("REGISTER", "User data saved to Firestore");
+                                                        Toast.makeText(RegistrationActivity.this,
+                                                                "Registration Successful", Toast.LENGTH_SHORT).show();
+                                                        startActivity(new Intent(RegistrationActivity.this,
+                                                                LoginActivity.class));
+                                                        finish();
+                                                    } else {
+                                                        Log.e("REGISTER", "Failed to save user data",
+                                                                databaseTask.getException());
+                                                        Toast.makeText(RegistrationActivity.this,
+                                                                "Failed to save user data", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    Toast.makeText(RegistrationActivity.this,
+                                            "Registration Failed: " + task.getException().getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                    Log.e("REGISTER", "Error", task.getException());
                                 }
-                            } else {
-                                Toast.makeText(RegistrationActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                Log.e("REGISTER", "Error", task.getException());
                             }
-                        }
-                    });
+                        });
             }
         });
 
