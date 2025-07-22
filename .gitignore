@@ -24,6 +24,3 @@
 /captures
 .externalNativeBuild
 .cxx
-# JVM crash logs
-hs_err_*.log
-replay_*.log

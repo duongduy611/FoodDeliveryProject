@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -92,14 +94,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     String role = documentSnapshot.getString("role");
-                    switch (role) {
+                    switch (Objects.requireNonNull(role)) {
                         case "admin":
                             // Redirect to Admin Activity
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             break;
                         case "shipper":
                             // Redirect to Shipper Activity
-                            startActivity(new Intent(LoginActivity.this, DetailDailyMealActivity.class));
+                            startActivity(new Intent(LoginActivity.this, ShipperActivity.class));
                             break;
                         default:
                             // Redirect to User Activity

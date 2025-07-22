@@ -1,12 +1,8 @@
 package com.example.foodappprm.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
-import android.view.WindowManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,39 +21,20 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
-        // Ẩn thanh status bar để full screen
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setDecorFitsSystemWindows(false);
-            final WindowInsetsController insetsController = getWindow().getInsetsController();
-            if (insetsController != null) {
-                insetsController.hide(WindowInsets.Type.statusBars());
-                insetsController.setSystemBarsBehavior(
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                );
-            }
-        } else {
-            getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
-            );
-        }
-
         setContentView(R.layout.activity_welcome);
-        getSupportActionBar().hide();
 
         // Kiểm tra nếu người dùng đã đăng nhập
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
+            // Nếu đã đăng nhập, chuyển thẳng đến MainActivity
             startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
-            finish();
+            finish(); // Kết thúc WelcomeActivity để không quay lại khi nhấn back
             return;
         }
 
-        // Xử lý padding nếu cần
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom); // bỏ padding top
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
     }
