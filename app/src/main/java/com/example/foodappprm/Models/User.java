@@ -4,6 +4,7 @@ public class User {
     private String fullNameText;
     private String emailText;
     private String passwordText;
+    private String role;
 
     // Empty constructor required for Firebase
     public User() {
@@ -18,6 +19,14 @@ public class User {
     public User(String fullNameText, String emailText) {
         this.fullNameText = fullNameText;
         this.emailText = emailText;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getFullNameText() {

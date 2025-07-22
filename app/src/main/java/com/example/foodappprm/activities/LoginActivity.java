@@ -22,9 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mStore;
     private EditText email, password;
     private Button login;
     private TextView register;
@@ -34,8 +37,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().hide();
 
         mAuth = FirebaseAuth.getInstance();
+        mStore = FirebaseFirestore.getInstance();
         email = findViewById(R.id.login_email);
         password = findViewById(R.id.login_password);
         login = findViewById(R.id.login_button);
@@ -53,42 +58,21 @@ public class LoginActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                     @Override
                                     public void onSuccess(AuthResult authResult) {
-                                        // Sau khi đăng nhập thành công, kiểm tra role
-                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                        String uid = mAuth.getCurrentUser().getUid();
-                                        db.collection("users").document(uid).get()
-                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                        if (documentSnapshot.exists()) {
-                                                            String role = documentSnapshot.getString("role");
-                                                            if ("shipper".equals(role)) {
-                                                                Toast.makeText(LoginActivity.this, "Login Shipper Successful", Toast.LENGTH_SHORT).show();
-                                                                startActivity(new Intent(LoginActivity.this, ShipperActivity.class));
-                                                            } else {
-                                                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                                            }
-                                                            finish();
-                                                        } else {
-                                                            Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    Toast.makeText(LoginActivity.this, "Failed to get user role: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                                });
+                                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT)
+                                                .show();
+                                        checkUserRole(authResult.getUser().getUid());
                                     }
-                                }).addOnFailureListener( new OnFailureListener() {
+                                }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(LoginActivity.this, "Login Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivity.this, "Login Failed: " + e.getMessage(),
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 });
                     } else {
                         password.setError("Password cannot be empty");
                     }
-                } else if(emailText.isEmpty()) {
+                } else if (emailText.isEmpty()) {
                     email.setError("Invalid email address");
                 } else {
                     email.setError("Please enter a valid email address");
@@ -100,6 +84,40 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
+            }
+        });
+    }
+
+    private void checkUserRole(String uid) {
+        mStore.collection("Users").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    String role = documentSnapshot.getString("role");
+                    switch (Objects.requireNonNull(role)) {
+                        case "admin":
+                            // Redirect to Admin Activity
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            break;
+                        case "shipper":
+                            // Redirect to Shipper Activity
+                            startActivity(new Intent(LoginActivity.this, ShipperActivity.class));
+                            break;
+                        default:
+                            // Redirect to User Activity
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            break;
+                    }
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(LoginActivity.this, "Failed to get user role: " + e.getMessage(), Toast.LENGTH_SHORT)
+                        .show();
             }
         });
     }
