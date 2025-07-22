@@ -101,12 +101,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return cartItems.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView cartItemImage;
         TextView cartItemName, cartItemPrice, quantityText, includedItemsText;
         ImageButton decreaseButton, increaseButton, deleteButton;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             cartItemImage = itemView.findViewById(R.id.cartItemImage);
             cartItemName = itemView.findViewById(R.id.cartItemName);
